@@ -10,6 +10,8 @@ import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.RequestCreator;
 
+import android.graphics.drawable.BitmapDrawable;
+import android.support.v7.graphics.Palette;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,7 +52,7 @@ public class GridViewAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        ViewHolder viewHolder;
+        final ViewHolder viewHolder;
         if (convertView == null){
             // we will use ViewHolder
             convertView = LayoutInflater.from(parent.getContext()).inflate(R.layout.grid_item, parent, false);
@@ -81,7 +83,17 @@ public class GridViewAdapter extends BaseAdapter {
         requestCreator.into(viewHolder.mImageView, new Callback() {
             @Override
             public void onSuccess() {
-
+                Palette.generateAsync(((BitmapDrawable) viewHolder.mImageView.getDrawable()).getBitmap(), new Palette.PaletteAsyncListener() {
+                    @Override
+                    public void onGenerated(Palette palette) {
+                        Palette.Swatch swatch = palette.getLightMutedSwatch();
+                        if (swatch != null) {
+                            viewHolder.mTextViewTitle.setTextColor(swatch.getBodyTextColor());
+                            viewHolder.mTextViewDate.setTextColor(swatch.getBodyTextColor());
+                            viewHolder.mRelativeLayout.setBackgroundColor(swatch.getRgb());
+                        }
+                    }
+                });
             }
 
             @Override
