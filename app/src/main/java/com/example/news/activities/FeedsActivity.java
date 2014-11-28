@@ -1,7 +1,11 @@
 package com.example.news.activities;
 
 import com.example.news.R;
+import com.example.news.adapters.GridViewAdapter;
 import com.example.news.adapters.MenuDrawerAdapter;
+import com.pkmmte.pkrss.Article;
+import com.pkmmte.pkrss.Callback;
+import com.pkmmte.pkrss.PkRSS;
 
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
@@ -11,13 +15,22 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.GridView;
 import android.widget.ListView;
 
+import java.util.ArrayList;
+import java.util.List;
 
-public class FeedsActivity extends BaseActivity {
+
+public class FeedsActivity extends BaseActivity implements Callback {
 
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerListView;
+    private GridView mGridView;
+    private GridViewAdapter mGridViewAdapter;
+    private List<Article> mItems = new ArrayList<Article>();
+    private int selectedFeed = 0;
+
     String[] menuTitles;
     String[] feedUrls;
 
@@ -28,7 +41,7 @@ public class FeedsActivity extends BaseActivity {
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer);
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, Gravity.START);
 
-        ActionBarDrawerToggle mActionBarDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar,
+        final ActionBarDrawerToggle mActionBarDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar,
                         R.string.drawer_opened, R.string.drawer_closed);
 
         mDrawerLayout.setDrawerListener(mActionBarDrawerToggle);
@@ -46,11 +59,33 @@ public class FeedsActivity extends BaseActivity {
         mDrawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                //todo
+                selectFeed(position);
+                mDrawerLayout.closeDrawers();
             }
         });
 
+        mGridView = (GridView) findViewById(R.id.gridView);
+        // we need to display articles, so lets check the library
+        mGridViewAdapter = new GridViewAdapter();
+        mGridView.setAdapter(mGridViewAdapter);
+        mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                // open new activity and display article
+            }
+        });
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        selectFeed(selectedFeed);
+    }
+
+    private void selectFeed(int position){
+        selectedFeed = position;
+        PkRSS.with(FeedsActivity.this).load(feedUrls[position]).callback(this).async();
+        mToolbar.setTitle(menuTitles[position]);
     }
 
     @Override
@@ -80,4 +115,26 @@ public class FeedsActivity extends BaseActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void OnPreLoad() {
+
+    }
+
+    @Override
+    public void OnLoaded(List<Article> articles) {
+        mItems = articles;
+        FeedsActivity.this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mGridViewAdapter.updateItems(mItems);
+                mGridViewAdapter.notifyDataSetChanged();
+            }
+        });
+
+    }
+
+    @Override
+    public void OnLoadFailed() {
+
+    }
 }
