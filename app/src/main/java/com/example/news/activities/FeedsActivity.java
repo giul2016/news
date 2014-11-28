@@ -17,6 +17,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -113,16 +114,11 @@ public class FeedsActivity extends BaseActivity implements Callback {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch (item.getItemId()){
+            case android.R.id.home:
+                mDrawerLayout.openDrawer(Gravity.START);
+                return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -146,6 +142,11 @@ public class FeedsActivity extends BaseActivity implements Callback {
 
     @Override
     public void OnLoadFailed() {
-
+        FeedsActivity.this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(FeedsActivity.this, getString(R.string.toast_error), Toast.LENGTH_LONG).show();
+            }
+        });
     }
 }

@@ -24,5 +24,6 @@
     </array>
 
     <string name="title_activity_article">ArticleActivity</string>
+    <string name="toast_error">Loading failed!</string>
 
 </resources>
