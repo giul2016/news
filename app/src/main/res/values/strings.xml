@@ -15,7 +15,6 @@
         <item>Android Police</item>
         <item>Gizmodo</item>
     </array>
-
     <array name="feed_urls">
         <item>http://feeds.feedburner.com/techcrunch</item>
         <item>http://feeds.feedburner.com/thenextweb</item>
@@ -23,5 +22,7 @@
         <item>http://feeds.feedburner.com/androidpolice</item>
         <item>http://feeds.gawker.com/gizmodo/full</item>
     </array>
+
+    <string name="title_activity_article">ArticleActivity</string>
 
 </resources>

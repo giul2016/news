@@ -72,6 +72,7 @@ public class FeedsActivity extends BaseActivity implements Callback {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 // open new activity and display article
+                ArticleActivity.launch(FeedsActivity.this, view.findViewById(R.id.relative_layout), mItems.get(position));
             }
         });
     }
