@@ -3,13 +3,13 @@ package com.example.news.activities;
 import com.example.news.R;
 import com.example.news.adapters.GridViewAdapter;
 import com.example.news.adapters.MenuDrawerAdapter;
+import com.example.news.interfaces.ToolbarToggle;
 import com.pkmmte.pkrss.Article;
 import com.pkmmte.pkrss.Callback;
 import com.pkmmte.pkrss.PkRSS;
 
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -41,11 +41,21 @@ public class FeedsActivity extends BaseActivity implements Callback {
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer);
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, Gravity.START);
 
-        final ActionBarDrawerToggle mActionBarDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar,
-                        R.string.drawer_opened, R.string.drawer_closed);
+        final ToolbarToggle toolbarToggle = new ToolbarToggle(this, mDrawerLayout, mToolbar, R.string.drawer_opened, R.string.drawer_closed);
+        toolbarToggle.setToggleListener(new ToolbarToggle.ToggleListener() {
+            @Override
+            public void onOpened() {
+                mToolbar.setTitle(R.string.drawer_opened);
+            }
 
-        mDrawerLayout.setDrawerListener(mActionBarDrawerToggle);
-        mActionBarDrawerToggle.syncState();
+            @Override
+            public void onClosed() {
+                mToolbar.setTitle(menuTitles[selectedFeed]);
+
+            }
+        });
+        mDrawerLayout.setDrawerListener(toolbarToggle);
+        toolbarToggle.syncState();
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
