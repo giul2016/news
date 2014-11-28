@@ -8,8 +8,12 @@ import com.pkmmte.pkrss.Article;
 import com.pkmmte.pkrss.Callback;
 import com.pkmmte.pkrss.PkRSS;
 
+import android.app.SearchManager;
+import android.content.Context;
 import android.os.Bundle;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.widget.SearchView;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,13 +27,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class FeedsActivity extends BaseActivity implements Callback {
+public class FeedsActivity extends BaseActivity implements Callback,
+        SearchView.OnQueryTextListener {
 
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerListView;
     private GridView mGridView;
     private GridViewAdapter mGridViewAdapter;
     private List<Article> mItems = new ArrayList<Article>();
+    private SearchView mSearchView;
+
     private int selectedFeed = 0;
 
     String[] menuTitles;
@@ -76,7 +83,6 @@ public class FeedsActivity extends BaseActivity implements Callback {
         });
 
         mGridView = (GridView) findViewById(R.id.gridView);
-        // we need to display articles, so lets check the library
         mGridViewAdapter = new GridViewAdapter();
         mGridView.setAdapter(mGridViewAdapter);
         mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -107,8 +113,16 @@ public class FeedsActivity extends BaseActivity implements Callback {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_feeds, menu);
+
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        MenuItem searchItem = menu.findItem(R.id.action_search);
+        mSearchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        mSearchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        if (mSearchView != null) {
+            mSearchView.setOnQueryTextListener(this);
+        }
+
         return true;
     }
 
@@ -130,14 +144,7 @@ public class FeedsActivity extends BaseActivity implements Callback {
     @Override
     public void OnLoaded(List<Article> articles) {
         mItems = articles;
-        FeedsActivity.this.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mGridViewAdapter.updateItems(mItems);
-                mGridViewAdapter.notifyDataSetChanged();
-            }
-        });
-
+        updateGrid(mItems);
     }
 
     @Override
@@ -148,5 +155,50 @@ public class FeedsActivity extends BaseActivity implements Callback {
                 Toast.makeText(FeedsActivity.this, getString(R.string.toast_error), Toast.LENGTH_LONG).show();
             }
         });
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String s) {
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String s) {
+        searchedResults(s);
+        return true;
+    }
+
+    private void searchedResults(String searchString){
+        if (searchString.length() < 3){
+            updateGrid(mItems);
+        }
+        List<Article> filtered = new ArrayList<Article>();
+        for (Article item : mItems) {
+            if (item.getTitle().toLowerCase().contains(searchString.toLowerCase()) ||
+                    item.getAuthor().toLowerCase().contains(searchString.toLowerCase())){
+                filtered.add(item);
+            }
+        }
+        updateGrid(filtered);
+    }
+
+    private void updateGrid(final List<Article> items){
+        FeedsActivity.this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mGridViewAdapter.updateItems(items);
+                mGridViewAdapter.notifyDataSetChanged();
+            }
+        });
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (!mSearchView.isIconified()){
+            invalidateOptionsMenu();
+            updateGrid(mItems);
+        }else{
+            super.onBackPressed();
+        }
     }
 }
