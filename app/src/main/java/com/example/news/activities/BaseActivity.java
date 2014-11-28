@@ -2,13 +2,13 @@
  * Created by Jure Novic on 28/11/14
  * Copyright (c) Jure Novic. All rights reserved.
  */
-package example.com.news.activities;
+package com.example.news.activities;
+
+import com.example.news.R;
 
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
-
-import example.com.news.R;
 
 public abstract class BaseActivity extends ActionBarActivity{
 
@@ -28,4 +28,8 @@ public abstract class BaseActivity extends ActionBarActivity{
     }
 
     protected abstract int getLayoutResource();
+
+    protected void setActionBarIcon(int iconRes){
+        mToolbar.setNavigationIcon(iconRes);
+    }
 }

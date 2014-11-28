@@ -5,5 +5,23 @@
     <string name="title_activity_feeds">FeedsActivity</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="drawer_opened">Opened</string>
+    <string name="drawer_closed">Closed</string>
+
+    <array name="menu_titles">
+        <item>Tech Crunch</item>
+        <item>The Next Web</item>
+        <item>Engadget</item>
+        <item>Android Police</item>
+        <item>Gizmodo</item>
+    </array>
+
+    <array name="feed_urls">
+        <item>http://feeds.feedburner.com/techcrunch</item>
+        <item>http://feeds.feedburner.com/thenextweb</item>
+        <item>http://feeds.feedburner.com/engadget</item>
+        <item>http://feeds.feedburner.com/androidpolice</item>
+        <item>http://feeds.gawker.com/gizmodo/full</item>
+    </array>
 
 </resources>
